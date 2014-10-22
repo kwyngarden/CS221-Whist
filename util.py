@@ -44,12 +44,9 @@ def get_legal_cards(cards, suit_led):
 def strongest_card(cards, suit_led, trump):
     if not cards:
         return None
-    if not suit_led:
-        return max([card for card in cards])
     trumps = [card for card in cards if card.suit == trump]
     if trumps:
         return max(trumps)
-    # Otherwise, return max of the suit led (guaranteed at least one)
     follows = [card for card in cards if card.suit == suit_led]
     if follows:
         return max(follows)

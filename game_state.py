@@ -10,6 +10,7 @@ class GameState:
         self.players = players
         self.partners = partners
         self.trick = None
+        self.trump = None
         self.cards_remaining = set()
         
         self.player_possible_suits = {}
@@ -41,3 +42,16 @@ class GameState:
             self.scores[player2],
             self.scores[player1] + self.scores[player2],
         )
+
+    def __str__(self):
+        out = ''
+        out += 'Players: ' + str(self.players) + '\n'
+        out += 'Partnerships: ' + str(self.partners) + '\n'
+        out += 'Trump: ' + str(self.trump) + '\n'
+        out += str(self.trick) + '\n'
+        out += 'Unplayed cards: '
+        for card in self.cards_remaining:
+            out += '%s ' % card
+        out += '\nPlayer possible suits: ' + str(self.player_possible_suits) + '\n'
+        out += 'Scores: ' + str(self.scores)
+        return out

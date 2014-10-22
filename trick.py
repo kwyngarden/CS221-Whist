@@ -21,3 +21,12 @@ class Trick:
     def winning_player(self):
         best_card = self.winning_card()
         return self.played[best_card] if best_card else None
+
+    def __str__(self):
+        out = ''
+        out += 'Played cards: '
+        for card in self.played:
+            out += '(%s, %s) ' % (card, self.played[card].name)
+        out += '\nSuit led: ' + str(self.suit_led) + '\n'
+        out += 'Players left to play: ' + str(self.left_to_play)
+        return out

@@ -44,12 +44,15 @@ def start_new_deal(game_state, dealer_index):
 def play_trick(game_state, first_to_play):
     game_state.trick = Trick(game_state.players, game_state.trump)
     turn_index = first_to_play
-    
+
     for _ in xrange(NUM_PLAYERS):
         player = game_state.players[turn_index]
         card = player.choose_card(game_state)
         game_state.trick.play_card(player, card)
         game_state.cards_remaining.remove(card)
+        if card.suit != game_state.trick.suit_led:
+            game_state.player_possible_suits[player.name].discard(game_state.trick.suit_led)
+
         print "%s played %s." % (player.name, card)
         turn_index = (turn_index + 1) % NUM_PLAYERS
 
@@ -88,18 +91,41 @@ def play_whist():
 
 # ORACLE CODE
 
-def play_oracle_whist():
+def play_oracle_whist(num_iters=10000):
     players, partners, oracle_name = get_oracle_players_and_partners()
-    game_state = GameState(players, partners)
+    allies = ['Oracle', 'PartnerBaseline']
+    opponents = ['OpponentBaseline1', 'OpponentBaseline2']
+    oracle_wins = 0
+    opponent_wins = 0
+    points_for = 0
+    points_against = 0
+    silent = True
+    
+    for _ in xrange(num_iters):
+        game_state = GameState(players, partners)
 
-    dealer_index = 0
-    while not game_state.is_game_over():
-        play_oracle_deal(game_state, dealer_index, oracle_name)
-        dealer_index = (dealer_index + 1) % NUM_PLAYERS
-        raw_input()
+        dealer_index = 0
+        while not game_state.is_game_over():
+            play_oracle_deal(game_state, dealer_index, oracle_name, silent=silent)
+            dealer_index = (dealer_index + 1) % NUM_PLAYERS
+            #raw_input()
+        
+        if not silent:
+            print 'The game is over! Final scores:'
+            game_state.print_scores()
+        
+        ally_score = sum([game_state.scores[ally] for ally in allies])
+        opp_score = sum([game_state.scores[opp] for opp in opponents])
+        if ally_score > opp_score:
+            oracle_wins += 1
+        else:
+            opponent_wins += 1
+        points_for += ally_score
+        points_against += opp_score
 
-    print 'The game is over! Final scores:'
-    game_state.print_scores()
+    print "Oracle record: %s-%s" % (oracle_wins, opponent_wins)
+    print "Points for: %s" % points_for
+    print "Points against: %s" % points_against
 
 def get_oracle_players_and_partners():
     players = [
@@ -116,24 +142,26 @@ def get_oracle_players_and_partners():
     }
     return players, partners, players[0].name
 
-def play_oracle_deal(game_state, dealer_index, oracle_name):
+def play_oracle_deal(game_state, dealer_index, oracle_name, silent=False):
     start_new_deal(game_state, dealer_index)
     
-    print '\nBefore this deal, the scores are as follows:'
-    game_state.print_scores()
+    if not silent:
+        print '\nBefore this deal, the scores are as follows:'
+        game_state.print_scores()
 
-    print '\n\n--------------- Beginning new deal ---------------'
-    print 'For this deal, the trump suit is %s.' % game_state.trump
+        print '\n\n--------------- Beginning new deal ---------------'
+        print 'For this deal, the trump suit is %s.' % game_state.trump
     first_to_play = (dealer_index + 1) % NUM_PLAYERS
     
     # Play some tricks
     for trick_num in xrange(NUM_TRICKS):
-        print '\n========== Beginning trick #%s ==========\n' % (trick_num + 1)
-        util.print_hands(game_state)
-        first_to_play = play_oracle_trick(game_state, first_to_play, oracle_name)
+        if not silent:
+            print '\n========== Beginning trick #%s ==========\n' % (trick_num + 1)
+            util.print_hands(game_state)
+        first_to_play = play_oracle_trick(game_state, first_to_play, oracle_name, silent=silent)
         #raw_input()
 
-def play_oracle_trick(game_state, first_to_play, oracle_name):
+def play_oracle_trick(game_state, first_to_play, oracle_name, silent=False):
     game_state.trick = Trick(game_state.players, game_state.trump)
     turn_index = first_to_play
     
@@ -145,10 +173,13 @@ def play_oracle_trick(game_state, first_to_play, oracle_name):
             # Let Oracle go last
             if i == 0:
                 game_state.trick.suit_led = card.suit
+                if not silent:
+                    print 'The oracle pretends to go first and sets the led suit to %s' % card.suit
         else:
             game_state.trick.play_card(player, card)
             game_state.cards_remaining.remove(card)
-            print "%s played %s." % (player.name, card)
+            if not silent:
+                print "%s played %s." % (player.name, card)
         turn_index = (turn_index + 1) % NUM_PLAYERS
 
     # Oracle always plays after other players
@@ -156,10 +187,12 @@ def play_oracle_trick(game_state, first_to_play, oracle_name):
     card = oracle_player.choose_card(game_state)
     game_state.trick.play_card(oracle_player, card)
     game_state.cards_remaining.remove(card)
-    print "%s played %s." % (oracle_player.name, card)
+    if not silent:
+        print "%s played %s." % (oracle_player.name, card)
 
     winning_player_name = game_state.trick.winning_player().name
-    print "\nTrick was won by %s with %s.\n" % (winning_player_name, game_state.trick.winning_card())
+    if not silent:
+        print "\nTrick was won by %s with %s.\n" % (winning_player_name, game_state.trick.winning_card())
     game_state.scores[winning_player_name] += 1
     return util.index_of_player_with_name(game_state, winning_player_name)
 
