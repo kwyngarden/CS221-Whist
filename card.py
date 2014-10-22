@@ -7,7 +7,7 @@ class Card:
         self.suit = suit.capitalize()
         self.rank = rank.capitalize()
 
-    def is_stronger_than(other_card, suit_led, trump):
+    def is_stronger_than(self, other_card, suit_led, trump):
         if other_card.suit == trump:
             return self.suit == trump and self > other_card
         if self.suit == trump:

@@ -20,6 +20,12 @@ def get_valid_number(min_num, max_num, message, indent=0):
             message = tab_string + "That wasn't a number. Try again: "
     return 0
 
+def get_player_with_name(game_state, player_name):
+    for i in xrange(len(game_state.players)):
+        if game_state.players[i].name == player_name:
+            return game_state.players[i]
+    return None
+
 def index_of_player_with_name(game_state, player_name):
     for i in xrange(len(game_state.players)):
         if game_state.players[i].name == player_name:
@@ -44,7 +50,10 @@ def strongest_card(cards, suit_led, trump):
     if trumps:
         return max(trumps)
     # Otherwise, return max of the suit led (guaranteed at least one)
-    return max([card for card in cards if card.suit == suit_led])
+    follows = [card for card in cards if card.suit == suit_led]
+    if follows:
+        return max(follows)
+    return max(cards)
 
 def weakest_card(cards, trump):
     nontrump = [card for card in cards if card.suit != trump]
