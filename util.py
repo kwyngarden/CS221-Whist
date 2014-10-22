@@ -1,22 +1,23 @@
 from card import suits
 
 
-def get_valid_number(min_num, max_num, message):
+def get_valid_number(min_num, max_num, message, indent=0):
     valid_nums = set()
     i = min_num
     while i <= max_num:
         valid_nums.add(i)
         i += 1
     
+    tab_string = '\t' * indent
     while True:
         try:
             choice = int(raw_input(message))
             if choice not in valid_nums:
-                print "That isn't a valid option number. Try again:"
+                message = tab_string + "That wasn't a valid option number. Try again: "
             else:
                 return choice
         except ValueError:
-            print "That wasn't a number. Try again:"
+            message = tab_string + "That wasn't a number. Try again: "
     return 0
 
 def index_of_player_with_name(game_state, player_name):
@@ -88,7 +89,7 @@ def print_cards(cards, num_tabs=0):
     for suit in suits:
         suited_cards = split_cards[suit]
         if suited_cards:
-            print (tab_str + suit + ':').ljust(10) + ' '.join([card.rank for card in suited_cards])
+            print (tab_str + suit + ':').ljust(12) + ' '.join([card.rank for card in suited_cards])
         else:
-            print (tab_str + suit + ':').ljust(10) + '-'
+            print (tab_str + suit + ':').ljust(12) + '-'
     print

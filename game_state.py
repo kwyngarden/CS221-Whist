@@ -1,4 +1,7 @@
-SCORE_TO_WIN = 3
+import util
+
+
+SCORE_TO_WIN = 30
 
 class GameState:
     """Holds the state of the game."""
@@ -23,3 +26,18 @@ class GameState:
             if self.scores[player.name] + self.scores[self.partners[player.name]] >= SCORE_TO_WIN:
                 return True
         return False
+
+    def print_scores(self):
+        self.print_team_score((self.players[0].name, self.partners[self.players[0].name]))
+        self.print_team_score((self.players[1].name, self.partners[self.players[1].name]))
+        print
+
+    def print_team_score(self, players):
+        player1, player2 = players
+        print '\t%s (%s) and %s (%s) have a total score of %s' % (
+            player1,
+            self.scores[player1],
+            player2,
+            self.scores[player2],
+            self.scores[player1] + self.scores[player2],
+        )

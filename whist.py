@@ -14,10 +14,10 @@ NUM_TRICKS = Deck.NUM_CARDS / NUM_PLAYERS
 
 def get_players_and_partners():
     players = [
-        HumanPlayer('player1'),
-        BaselinePlayer('player2'),
-        BaselinePlayer('player3'),
-        BaselinePlayer('player4'),
+        HumanPlayer('HumanPlayer'),
+        BaselinePlayer('OpponentBaseline1'),
+        BaselinePlayer('PartnerBaseline'),
+        BaselinePlayer('OpponentBaseline2'),
     ]
     partners = {
         players[0].name: players[2].name,
@@ -59,17 +59,21 @@ def play_trick(game_state, first_to_play):
 
 def play_deal(game_state, dealer_index, using_oracle=False):
     start_new_deal(game_state, dealer_index)
+    print '\n\n--------------- Beginning new deal ---------------'
     print 'For this deal, the trump suit is %s.' % game_state.trump
     first_to_play = (dealer_index + 1) % NUM_PLAYERS
     
     # Play some tricks
     for trick_num in xrange(NUM_TRICKS):
-        print '\n========== Beginning trick #%s. ==========\n' % (trick_num + 1)
+        print '\n========== Beginning trick #%s ==========\n' % (trick_num + 1)
         # util.print_hands(game_state)
         first_to_play = play_trick(game_state, first_to_play)
         if game_state.is_game_over():
             # The game ends as soon as the final trick is played
             return
+
+    print '\nAll tricks have been played for this deal. The scores are as follows:'
+    game_state.print_scores()
 
 def play_whist():
     players, partners = get_players_and_partners()
@@ -79,9 +83,9 @@ def play_whist():
     while not game_state.is_game_over():
         play_deal(game_state, dealer_index)
         dealer_index = (dealer_index + 1) % NUM_PLAYERS
-        print 'Scores after deal: %s' % game_state.scores
 
-    print 'Final scores: %s' % game_state.scores
+    print 'The game is over! Final scores:'
+    game_state.print_scores()
 
 if __name__ == '__main__':
     play_whist()
