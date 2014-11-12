@@ -28,6 +28,12 @@ class GameState:
                 return True
         return False
 
+    def has_card_of_suit(self, suit):
+        for card in self.cards_remaining:
+            if card.suit == suit:
+                return True
+        return False
+
     def print_scores(self):
         self.print_team_score((self.players[0].name, self.partners[self.players[0].name]))
         self.print_team_score((self.players[1].name, self.partners[self.players[1].name]))
