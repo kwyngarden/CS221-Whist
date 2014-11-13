@@ -22,6 +22,12 @@ class Trick:
         best_card = self.winning_card()
         return self.played[best_card] if best_card else None
 
+    def partner_has_played(self, game_state, player):
+        return game_state.get_partner(player).name not in self.left_to_play
+
+    def get_opponents_yet_to_play(self, game_state, player):
+        return [p for p in self.left_to_play if game_state.are_opponents(player.name, p)]
+
     def __str__(self):
         out = ''
         out += 'Played cards: '

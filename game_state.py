@@ -19,8 +19,21 @@ class GameState:
             self.player_possible_suits[player.name] = set()
             self.scores[player.name] = 0
 
+    def get_partner(self, player):
+        return util.get_player_with_name(self, self.partners[player.name])
+
+    def get_opponents(self, player):
+        opponents = []
+        for p in players:
+            if self.are_opponents(p.name, player.name):
+                opponents.append(p)
+        return opponents
+
     def are_partners(self, player1_name, player2_name):
         return self.partners[player1_name] == player2_name
+
+    def are_opponents(self, player1_name, player2_name):
+        return not self.are_partners(player1_name, player2_name)
 
     def is_game_over(self):
         for player in self.players:

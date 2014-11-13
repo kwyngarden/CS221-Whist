@@ -53,6 +53,8 @@ def strongest_card(cards, suit_led, trump):
     return max(cards)
 
 def weakest_card(cards, trump):
+    if not cards:
+        return None
     nontrump = [card for card in cards if card.suit != trump]
     if nontrump:
         return min(nontrump)

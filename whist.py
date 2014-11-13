@@ -94,7 +94,7 @@ def play_whist():
 
 # ORACLE CODE
 
-def play_oracle_whist(num_iters=10000):
+def play_oracle_whist(num_iters=1000):
     players, partners, oracle_name = get_oracle_players_and_partners()
     allies = ['Oracle', 'PartnerBaseline']
     opponents = ['OpponentBaseline1', 'OpponentBaseline2']
@@ -203,5 +203,5 @@ def play_oracle_trick(game_state, first_to_play, oracle_name, silent=False):
     return util.index_of_player_with_name(game_state, winning_player_name)
 
 if __name__ == '__main__':
-    play_whist()
-    #play_oracle_whist()
+    # play_whist()
+    play_oracle_whist()
