@@ -30,6 +30,8 @@ class GameState:
         return opponents
 
     def are_partners(self, player1_name, player2_name):
+        if player1_name == player2_name:
+            return True # You're on your own team! Easier to do here than checking everywhere else
         return self.partners[player1_name] == player2_name
 
     def are_opponents(self, player1_name, player2_name):
