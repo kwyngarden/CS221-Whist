@@ -58,6 +58,10 @@ def play_trick(game_state, first_to_play):
             game_state.player_possible_suits[player.name].discard(game_state.trick.suit_led)
 
         print "%s played %s." % (player.name, card)
+        # each other player observes this play
+        for opponent in game_state.players:
+            if opponent != player:
+                opponent.observe_play(game_state, player, card)
         turn_index = (turn_index + 1) % NUM_PLAYERS
 
     winning_player_name = game_state.trick.winning_player().name

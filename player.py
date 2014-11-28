@@ -8,3 +8,7 @@ class Player:
 
     def choose_card(self, game_state):
         raise NotImplementedError("Strategy unimplemented")
+
+    """Called when another player makes a play"""
+    def observe_play(self, game_state, player, card):
+        return # default nothing happens
