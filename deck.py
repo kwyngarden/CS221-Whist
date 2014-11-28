@@ -9,9 +9,9 @@ class Deck:
         for suit in suits:
             for rank in ranks:
                 self.cards.append(Card(suit, rank))
-        shuffle(self.cards)
     
     def deal(self):
+        shuffle(self.cards)
         return self.cards[:13], self.cards[13:26], self.cards[26:39], self.cards[39:]
 
     def __str__(self):
