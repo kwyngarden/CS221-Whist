@@ -1,5 +1,29 @@
+# -*- coding: utf-8 -*-
+
 suits = ['Hearts', 'Clubs', 'Diamonds', 'Spades']
 ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace']
+
+suit_symbols = {
+    'Spades': u'♠',
+    'Hearts': u'♥',
+    'Diamonds': u'♦',
+    'Clubs': u'♣',
+}
+rank_names = {
+    '2': '2',
+    '3': '3',
+    '4': '4',
+    '5': '5',
+    '6': '6',
+    '7': '7',
+    '8': '8',
+    '9': '9',
+    '10': '10',
+    'Jack': 'J',
+    'Queen' : 'Q',
+    'King' : 'K',
+    'Ace': 'A',
+}
 
 class Card:
     
@@ -19,7 +43,7 @@ class Card:
         return self > other_card
     
     def __str__(self):
-        return self.rank + '-' + self.suit
+        return rank_names[self.rank] + suit_symbols[self.suit]
 
     def __lt__(self, other):
         return ranks.index(self.rank) < ranks.index(other.rank)

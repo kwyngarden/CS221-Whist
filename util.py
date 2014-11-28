@@ -1,4 +1,4 @@
-from card import suits
+from card import suits, suit_symbols, rank_names
 
 
 def get_valid_number(min_num, max_num, message, indent=0):
@@ -97,7 +97,7 @@ def print_cards(cards, num_tabs=0):
     for suit in suits:
         suited_cards = split_cards[suit]
         if suited_cards:
-            print (tab_str + suit + ':').ljust(12) + ' '.join([card.rank for card in suited_cards])
+            print (tab_str + suit + ':').ljust(12) + ' '.join([(rank_names[card.rank] + suit_symbols[card.suit]) for card in suited_cards])
         else:
             print (tab_str + suit + ':').ljust(12) + '-'
     print

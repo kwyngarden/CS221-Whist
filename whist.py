@@ -1,4 +1,4 @@
-from card import Card, suits, ranks
+from card import Card, suits, ranks, suit_symbols
 from deck import Deck
 from game_state import GameState
 from trick import Trick
@@ -72,12 +72,12 @@ def play_deal(game_state, dealer_index, using_oracle=False):
     game_state.print_scores()
     
     print '\n\n--------------- Beginning new deal ---------------'
-    print 'For this deal, the trump suit is %s.' % game_state.trump
+    print 'For this deal, the trump suit is %s %s.' % (game_state.trump, suit_symbols[game_state.trump])
     first_to_play = (dealer_index + 1) % NUM_PLAYERS
     
     # Play some tricks
     for trick_num in xrange(NUM_TRICKS):
-        print '\n========== Beginning trick #%s (trump is %s) ==========\n' % (trick_num + 1, game_state.trump)
+        print '\n========== Beginning trick #%s - trump is %s %s ==========\n' % (trick_num + 1, game_state.trump, suit_symbols[game_state.trump])
         # util.print_hands(game_state)
         first_to_play = play_trick(game_state, first_to_play)
 
@@ -93,13 +93,14 @@ def play_whist():
     print 'The game is over! Final scores:'
     game_state.print_scores()
 
-# ORACLE CODE
+
+####################### ORACLE CODE #######################
 
 def play_oracle_whist(num_iters=1000, silent=True):
-    random.seed(42)
-    players, partners, oracle_name = get_oracle_players_and_partners()
-    allies = ['Oracle1', 'Oracle2']
-    opponents = ['OpponentBaseline1', 'OpponentBaseline2']
+    # random.seed(42)
+    oracles = ['Oracle1', 'Oracle2']
+    opponents = ['Opponent1', 'Opponent2']
+    players, partners, oracle_name = get_oracle_players_and_partners(oracles, opponents)
     oracle_wins = 0
     opponent_wins = 0
     points_for = 0
@@ -118,26 +119,26 @@ def play_oracle_whist(num_iters=1000, silent=True):
             print 'The game is over! Final scores:'
             game_state.print_scores()
         
-        ally_score = sum([game_state.scores[ally] for ally in allies])
+        oracle_score = sum([game_state.scores[ally] for ally in allies])
         opp_score = sum([game_state.scores[opp] for opp in opponents])
-        if ally_score > opp_score:
+        if oracle_score > opp_score:
             oracle_wins += 1
         else:
             opponent_wins += 1
-        points_for += ally_score
+        points_for += oracle_score
         points_against += opp_score
 
     print "Oracle record: %s-%s" % (oracle_wins, opponent_wins)
     print "Points for: %s" % points_for
     print "Points against: %s" % points_against
 
-def get_oracle_players_and_partners():
+def get_oracle_players_and_partners(oracle_names, opponent_names):
     players = [
-        # BaselinePlayer('OpponentBaseline1'),
-        OraclePlayer('Oracle1'),
-        BaselinePlayer('OpponentBaseline2'),
-        OraclePlayer('Oracle2'),
-        BaselinePlayer('OpponentBaseline1'),
+        # BaselinePlayer(opponent_names[0]),
+        OraclePlayer(oracle_names[0]),
+        BaselinePlayer(opponent_names[1]),
+        OraclePlayer(oracle_names[1]),
+        BaselinePlayer(opponent_names[0]),
     ]
     partners = {
         players[0].name: players[2].name,
@@ -190,6 +191,8 @@ def play_oracle_trick(game_state, first_to_play, silent=False):
         print "\nTrick was won by %s with %s.\n" % (winning_player_name, game_state.trick.winning_card())
     game_state.scores[winning_player_name] += 1
     return util.index_of_player_with_name(game_state, winning_player_name)
+
+###################### END ORACLE CODE ######################
 
 if __name__ == '__main__':
     play_whist()

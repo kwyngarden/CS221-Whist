@@ -1,4 +1,4 @@
-from card import suits
+from card import suits, suit_symbols
 from player import Player
 import util
 
@@ -22,7 +22,9 @@ class HumanPlayer(Player):
             print "\t%s is currently winning with %s." % (winning_player, winning_card)
 
         if game_state.trick.suit_led:
-            print "\t%s was led and %s is trump. Your options are:" % (game_state.trick.suit_led, game_state.trump)
+            print "\t%s %s was led and %s %s is trump. Your options are:" % (
+                game_state.trick.suit_led, suit_symbols[game_state.trick.suit_led],
+                game_state.trump, suit_symbols[game_state.trump])
         else:
             print "\tYou are the first to play and trump is %s. Your options are:" % game_state.trump
         for i in xrange(len(sorted_options)):
