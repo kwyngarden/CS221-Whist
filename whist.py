@@ -50,6 +50,7 @@ def play_trick(game_state, first_to_play):
         player = game_state.players[turn_index]
         card = player.choose_card(game_state)
         game_state.trick.play_card(player, card)
+        player.cards.remove(card)
         game_state.cards_remaining.remove(card)
         if not game_state.has_card_of_suit(card.suit):
             for everyPlayer in game_state.players:
@@ -179,6 +180,7 @@ def play_oracle_trick(game_state, first_to_play, silent=False):
         player = game_state.players[turn_index]
         card = player.choose_card(game_state)
         game_state.trick.play_card(player, card)
+        player.cards.remove(card)
         game_state.cards_remaining.remove(card)
         if not game_state.has_card_of_suit(card.suit):
             for everyPlayer in game_state.players:
