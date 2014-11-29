@@ -6,6 +6,11 @@ class Player:
         self.name = name
         self.cards = []
 
+    """Called when a new round is starting so player can setup their strategy"""
+    def round_start(self, game_state):
+        return # default nothing happens
+
+    """Ask the player to choose a card"""
     def choose_card(self, game_state):
         raise NotImplementedError("Strategy unimplemented")
 
