@@ -7,21 +7,23 @@ class Trick:
         self.trump = trump
         self.suit_led = None
         self.left_to_play = set([player.name for player in players])
-        self.last_player = None
-
-    def __copy__(self):
-        clone = type(self)([], self.trump)
-        clone.played = dict(self.played)
-        clone.suit_led = self.suit_led
-        clone.left_to_play = set(self.left_to_play)
-        clone.last_player = self.last_player
+        self.play_order = []
 
     def play_card(self, player, card):
         if not self.suit_led:
             self.suit_led = card.suit
         self.played[card] = player
         self.left_to_play.remove(player.name)
-        self.last_player = player
+        self.play_order.append(player)
+
+    def revert_play(self, player, card):
+        assert (self.play_order)
+        last = self.play_order.pop()
+        assert (last == player)
+        if not self.play_order:
+            self.suit_led = None
+        del self.played[card]
+        self.left_to_play.add(player.name)
 
     def winning_card(self):
         return util.strongest_card([card for card in self.played], self.suit_led, self.trump)
