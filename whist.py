@@ -8,6 +8,7 @@ from baseline_player import BaselinePlayer
 from human_player import HumanPlayer
 from oracle_player import OraclePlayer
 from rules_player import RulesPlayer
+from minimax_player import MinimaxPlayer
 
 import random
 import util

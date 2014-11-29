@@ -3,27 +3,46 @@ import copy, operator
 
 class Predictor:
 
-    def __init__(self):
+    def __init__(self, threshold):
         self.deck = Deck()
-        self._players = []
+        self.players = []
         self.card_prob = []
+        self.threshold = threshold
+        self.plays = set()
 
     def __copy__(self):
-        clone = type(self)()
-        clone._players = self._players
-        clone.card_prob = copy.deepcopy(self.card_prob)
+        clone = Predictor(self.threshold)
+        clone.players = self.players
+        clone.card_prob = [{card: prob for card, prob in probs.items()} for probs in self.card_prob]
+        return clone
 
-    def setup(self, game_state):
-        self._players = game_state.players
-        self.card_prob = [{card: 1.0 for card in self.deck.cards} for _ in len(self._players)]
+    """Setup/resets the predictor state so make sure 
+       setup() is called before predict() or learn()"""
+    def reset(self, game_state):
+        self.players = game_state.players
+        self.card_prob = [{card: 1.0 for card in self.deck.cards} for _ in xrange(len(self.players))]
+        self.plays = set()
 
-    def learn(self, game_state, player, card):
-        if not self._players:
-            self.setup(game_state)
+    """Update model with information from game_state"""
+    def refresh(self, game_state, current_player):
+        # TODO: reweight hands of other players
+        index = self.players.index(current_player)
+        # we know the player's hand
+        self.card_prob[index] = {card: 1.0 if card in current_player.cards else 0.0 for card in self.deck.cards}
+
+    """Update model once we observe a player making a play"""
+    def learn(self, player, card):
         for prob in self.card_prob:
             prob[card] = 0
         return
 
+    """Returns a list of cards that we are fairly sure the player has"""
     def predict(self, player):
-        index = self._players.index(player)
-        return max(self.card_prob[index].iteritems(), key=operator.itemgetter(1))[0]
+        index = self.players.index(player)
+        return [card for card, prob in self.card_prob[index].items() if prob >= self.threshold and card not in self.plays]
+
+    def try_play(self, card):
+        self.plays.add(card)
+
+    def revert_play(self, card):
+        self.plays.remove(card)
