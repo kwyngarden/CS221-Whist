@@ -7,6 +7,7 @@ from player import Player
 from baseline_player import BaselinePlayer
 from human_player import HumanPlayer
 from oracle_player import OraclePlayer
+from minimax_player import MinimaxPlayer
 
 import random
 import util
