@@ -39,6 +39,7 @@ def start_new_deal(game_state, dealer_index):
     hands = deck.deal()
     for i in xrange(NUM_PLAYERS):
         game_state.players[i].cards = hands[i]
+        game_state.players[i].round_start(game_state)
     reset_player_possible_suits(game_state)
     game_state.trump = game_state.players[dealer_index].cards[-1].suit
 
