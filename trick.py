@@ -13,7 +13,6 @@ class Trick:
             self.suit_led = card.suit
         self.played[card] = player
         self.left_to_play.remove(player.name)
-        player.cards.remove(card)
 
     def winning_card(self):
         return util.strongest_card([card for card in self.played], self.suit_led, self.trump)
