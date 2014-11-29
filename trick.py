@@ -1,4 +1,4 @@
-import util
+import util, copy
 
 class Trick:
     
@@ -8,6 +8,13 @@ class Trick:
         self.suit_led = None
         self.left_to_play = set([player.name for player in players])
         self.last_player = None
+
+    def __copy__(self):
+        clone = type(self)([], self.trump)
+        clone.played = dict(self.played)
+        clone.suit_led = self.suit_led
+        clone.left_to_play = set(self.left_to_play)
+        clone.last_player = self.last_player
 
     def play_card(self, player, card):
         if not self.suit_led:
