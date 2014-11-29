@@ -21,6 +21,9 @@ class Card:
     def __str__(self):
         return self.rank + '-' + self.suit
 
+    def __repr__(self):
+        return self.__str__()
+
     def __lt__(self, other):
         return ranks.index(self.rank) < ranks.index(other.rank)
 
@@ -28,7 +31,7 @@ class Card:
         if type(self) is type(other):
             return self.suit == other.suit and self.rank == other.rank
         else:
-            return false
+            return False
 
     def __hash__(self):
         return 23 * self.rank.__hash__() + 37 * self.suit.__hash__()
