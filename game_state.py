@@ -14,9 +14,11 @@ class GameState:
         self.cards_remaining = set()
         
         self.player_possible_suits = {}
+        self.unlikelies = {}
         self.scores = {}
         for player in players:
             self.player_possible_suits[player.name] = set()
+            self.unlikelies[player.name] = set()
             self.scores[player.name] = 0
 
     def get_partner(self, player):

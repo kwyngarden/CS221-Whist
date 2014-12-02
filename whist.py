@@ -36,6 +36,10 @@ def reset_player_possible_suits(game_state):
     for player in game_state.players:
         game_state.player_possible_suits[player.name] = set(suits)
 
+def reset_unlikelies(game_state):
+    for player in game_state.players:
+        game_state.unlikelies[player.name] = set()
+
 def start_new_deal(game_state, dealer_index):
     deck = Deck()
     game_state.cards_remaining = set(deck.cards)
@@ -44,6 +48,7 @@ def start_new_deal(game_state, dealer_index):
         game_state.players[i].cards = hands[i]
         game_state.players[i].round_start(game_state)
     reset_player_possible_suits(game_state)
+    reset_unlikelies(game_state)
     game_state.trump = game_state.players[dealer_index].cards[-1].suit
 
 def play_trick(game_state, first_to_play):
@@ -51,6 +56,7 @@ def play_trick(game_state, first_to_play):
     turn_index = first_to_play
 
     for _ in xrange(NUM_PLAYERS):
+        lastPlayer = len(game_state.trick.left_to_play) == 1
         player = game_state.players[turn_index]
         card = player.choose_card(game_state)
         game_state.trick.play_card(player, card)
@@ -67,6 +73,9 @@ def play_trick(game_state, first_to_play):
         for opponent in game_state.players:
             if opponent != player:
                 opponent.observe_play(game_state, player, card)
+        if lastPlayer:
+            beatCards = set([c for c in game_state.cards_remaining if c > card])
+            game_state.unlikelies[player.name] = game_state.unlikelies[player.name].union(beatCards)
         turn_index = (turn_index + 1) % NUM_PLAYERS
 
     winning_player_name = game_state.trick.winning_player().name
@@ -143,7 +152,7 @@ def play_oracle_whist(num_iters=1000, silent=True):
 
 def get_oracle_players_and_partners(oracle_names, opponent_names):
     players = [
-        # BaselinePlayer(opponent_names[0]),
+        # RulesPlayer(opponent_names[0]),
         OriginalRulesPlayer(oracle_names[0]),
         RulesPlayer(opponent_names[1]),
         OriginalRulesPlayer(oracle_names[1]),
@@ -182,6 +191,7 @@ def play_oracle_trick(game_state, first_to_play, silent=False):
     turn_index = first_to_play
     
     for i in xrange(NUM_PLAYERS):
+        lastPlayer = len(game_state.trick.left_to_play) == 1
         player = game_state.players[turn_index]
         card = player.choose_card(game_state)
         game_state.trick.play_card(player, card)
@@ -194,6 +204,13 @@ def play_oracle_trick(game_state, first_to_play, silent=False):
             game_state.player_possible_suits[player.name].discard(game_state.trick.suit_led)
         if not silent:
             print "%s played %s." % (player.name, card)
+        # each other player observes this play
+        for opponent in game_state.players:
+            if opponent != player:
+                opponent.observe_play(game_state, player, card)
+        if lastPlayer:
+            beatCards = set([c for c in game_state.cards_remaining if c > card])
+            game_state.unlikelies[player.name] = game_state.unlikelies[player.name].union(beatCards)
         turn_index = (turn_index + 1) % NUM_PLAYERS
 
     winning_player_name = game_state.trick.winning_player().name
