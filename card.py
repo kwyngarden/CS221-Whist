@@ -52,7 +52,7 @@ class Card:
         if type(self) is type(other):
             return self.suit == other.suit and self.rank == other.rank
         else:
-            return false
+            return False
 
     def __hash__(self):
         return 23 * self.rank.__hash__() + 37 * self.suit.__hash__()
