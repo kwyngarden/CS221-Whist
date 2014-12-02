@@ -1,9 +1,10 @@
 from trick import Trick
-import random, util
+from generate_hands import HandGenerator
+import collections, random, util
 
 MINIMAX_DEPTH = 2
 
-def minimax_values(player, game_state, all_hands):
+def minimax_values(player, game_state, players_hands):
     players = game_state.players
     turn_index = players.index(player)
     def vopt(hands, trick, depth):
@@ -42,17 +43,24 @@ def minimax_values(player, game_state, all_hands):
     # make best play
     legal_cards = util.get_legal_cards(player.cards, game_state.trick.suit_led)
     trick = game_state.trick
-    choices = []
-    max_score = float("-inf")
+    choices = collections.Counter()
     for card in legal_cards[:]:
         trick.play_card(player, card)
-        all_hands[player.name].remove(card)
-        score = vopt(all_hands, trick, MINIMAX_DEPTH)
-        all_hands[player.name].add(card)
+        players_hands[player.name].remove(card)
+        score = vopt(players_hands, trick, MINIMAX_DEPTH)
+        players_hands[player.name].add(card)
         trick.revert_play(player, card)
-        print "Predict %s: %d" % (card, score)
-        choices.append((score, card))
-        if score > max_score:
-            max_score = score
+        choices[card] = score
 
     return choices
+
+def minimax_values(player, game_state):
+    gen = HandGenerator()
+    all_hands = gen.generate_hands(game_state, player)
+    total = collections.Counter()
+    for hands in all_hands:
+        hands[player] = player.cards
+        total += minimax_values(player, game_state, hands)
+    vals = {card: value * 1.0/len(total) for card, value in total.items()}
+    return vals
+
