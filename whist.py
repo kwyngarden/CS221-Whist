@@ -18,9 +18,9 @@ NUM_TRICKS = Deck.NUM_CARDS / NUM_PLAYERS
 
 def get_players_and_partners():
     players = [
-        HumanPlayer('Human'),
+        RulesPlayer('Human'),
         BaselinePlayer('OpponentBaseline1'),
-        OraclePlayer('OraclePlayer'),
+        BaselinePlayer('OraclePlayer'),
         BaselinePlayer('OpponentBaseline2'),
     ]
     partners = {

@@ -61,6 +61,7 @@ def minimax_values(player, game_state):
     for hands in all_hands:
         hands[player] = player.cards
         total += minimax_values(player, game_state, hands)
-    vals = {card: value * 1.0/len(total) for card, value in total.items()}
+    all_scores = sum(vals.values())
+    vals = {card: value * 1.0/all_scores for card, value in total.items()}
+    print "values: %s" % vals
     return vals
-
