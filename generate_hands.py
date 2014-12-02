@@ -9,7 +9,7 @@ import time
 class HandGenerator:
 
     # Constructor
-    def __init__(self, timeout=10, max_hands=5000):
+    def __init__(self, timeout=10, max_hands=5000000):
         self.timeout = timeout
         self.max_hands = max_hands
 
@@ -59,9 +59,12 @@ class HandGenerator:
 
     def backtrack(self, cards, hand_assignments, players, player_possible_suits, player_num_cards, partial_assignment):
         #print "Backtracking on %s, partial assignment %s" % (cards, partial_assignment)
+        if self.should_timeout() or len(hand_assignments) >= self.max_hands:
+            return True
+
         if not cards:
             hand_assignments.append(copy.deepcopy(partial_assignment))  
-            return self.should_timeout() or len(hand_assignments) >= self.max_hands
+            return False
         
         # Least constrained value: order players by number of cards left
         ordered_players = sorted(players, key=player_num_cards.get, reverse=True)

@@ -12,7 +12,7 @@ def monte_carlo_utilities(game_state, player, max_simulations=2000):
     hand_assignments = hand_generator.generate_hands(game_state, player)
 
     for card in legal_cards:
-        for i in xrange(simulations_per_card):
+        for i in xrange(len(hand_assignments)):
             hands = {player_name : list(hand_assignments[i][player_name]) for player_name in hand_assignments[i]}
             utilities[card] += monte_carlo_simulate(game_state, player, card, hands)
 
