@@ -1,7 +1,7 @@
 from card import suits, suit_symbols
+from monte_carlo import monte_carlo_utilities
 from player import Player
 import util
-
 
 class HumanPlayer(Player):
     """Human player which chooses cards through stdin."""
@@ -16,6 +16,10 @@ class HumanPlayer(Player):
         print "\n\tIt's your (%s) turn to pick a card! Your hand looks like this:" % self.name
         util.print_cards(self.cards, num_tabs=2)
         
+        # if len(game_state.cards_remaining) <= 60:
+        #     utilities = monte_carlo_utilities(game_state, self)
+        #     print 'Got Monte Carlo utilities: %s' % (utilities)
+
         if game_state.trick.played:
             winning_player = game_state.trick.winning_player().name
             winning_card = game_state.trick.winning_card()

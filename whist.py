@@ -79,7 +79,8 @@ def play_trick(game_state, first_to_play):
         turn_index = (turn_index + 1) % NUM_PLAYERS
 
     winning_player_name = game_state.trick.winning_player().name
-    print "\nTrick was won by %s with %s.\n" % (winning_player_name, game_state.trick.winning_card())
+    print "\nTrick was won by %s with %s." % (winning_player_name, game_state.trick.winning_card())
+    raw_input('Press enter to proceed.\n')
     game_state.scores[winning_player_name] += 1
     return util.index_of_player_with_name(game_state, winning_player_name)
 
@@ -216,11 +217,12 @@ def play_oracle_trick(game_state, first_to_play, silent=False):
     winning_player_name = game_state.trick.winning_player().name
     if not silent:
         print "\nTrick was won by %s with %s.\n" % (winning_player_name, game_state.trick.winning_card())
+        raw_input()
     game_state.scores[winning_player_name] += 1
     return util.index_of_player_with_name(game_state, winning_player_name)
 
 ###################### END ORACLE CODE ######################
 
 if __name__ == '__main__':
-    # play_whist()
-    play_oracle_whist(silent=True, num_iters=1000)
+    play_whist()
+    # play_oracle_whist(silent=True, num_iters=1000)

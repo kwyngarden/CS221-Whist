@@ -43,7 +43,7 @@ class Card:
         return self > other_card
     
     def __str__(self):
-        return rank_names[self.rank] + suit_symbols[self.suit]
+        return (rank_names[self.rank] + suit_symbols[self.suit]).encode('utf8')
 
     def __repr__(self):
         return self.__str__()
