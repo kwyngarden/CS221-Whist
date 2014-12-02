@@ -8,14 +8,28 @@ import time
 
 class HandGenerator:
 
-    def __init__(self, timeout=10, max_hands=100000):
+    # Constructor
+    def __init__(self, timeout=10, max_hands=20000):
         self.timeout = timeout
         self.max_hands = max_hands
 
-    def should_timeout(self):
-        if not self.start_time:
-            return False
-        return (time.time() - self.start_time) > self.timeout
+    # Public interface of hand generator
+    def generate_hands(self, game_state, player):
+        other_player_cards = game_state.cards_remaining.difference(player.cards)
+        other_players = [p.name for p in game_state.players if p.name != player.name]
+        player_num_cards = {p.name: len(p.cards) for p in game_state.players}
+
+        hand_assignments = self._generate_hands(
+            other_player_cards,
+            other_players,
+            game_state.player_possible_suits,
+            player_num_cards,
+        )
+
+        for hand_assignment in hand_assignments:
+            hand_assignment[player.name] = set(player.cards)
+
+        return hand_assignments
 
     # Hand generator
     # Params:
@@ -27,7 +41,7 @@ class HandGenerator:
     # Usage: get a list of opponents + partners names (all but self), create a map of how many
     # cards each has (might not be the same if in the middle of a trick), create set of unplayed
     # cards minus the player's own cards, and pass in player_possible_suits as is.
-    def generate_hands(self, cards_remaining, players, player_possible_suits, player_num_cards):
+    def _generate_hands(self, cards_remaining, players, player_possible_suits, player_num_cards):
         # Data structure used: set of assignments
         #   An assignment is a map from player name -> hand
         #       A hand is a set of cards
@@ -68,6 +82,10 @@ class HandGenerator:
                 if should_stop:
                     return True
 
+    def should_timeout(self):
+        if not self.start_time:
+            return False
+        return (time.time() - self.start_time) > self.timeout
 
     def order_cards_by_least_constrained(self, cards, players, player_possible_suits):
         suit_counts = {suit: 0 for suit in suits}
@@ -83,6 +101,6 @@ if __name__ == "__main__":
     f = random.sample(Deck().cards, 24)
     player_num_cards = {player: 8 for player in players}
     player_possible_suits = {player: set(suits) for player in players}
-    hand_assignments = gen.generate_hands(f, players, player_possible_suits, player_num_cards)
+    hand_assignments = gen._generate_hands(f, players, player_possible_suits, player_num_cards)
     print len(hand_assignments)
 
