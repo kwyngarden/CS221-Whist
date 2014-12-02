@@ -1,5 +1,6 @@
 from player import Player
 import util
+import minimax
 
 ATTEMPT_CUTOFF = 0.45
 PARTNER_CUTOFF = 0.50
@@ -11,8 +12,13 @@ class RulesPlayer(Player):
     """Rule-Based computer player."""
     def choose_card(self, game_state):
         #print "RULE CARDS", [(c.rank, c.suit) for c in self.cards]
-        legalCards = util.get_legal_cards(self.cards, game_state.trick.suit_led)
-        winProbs = [getWinProb(game_state, self, card) for card in legalCards]
+        if len(game_state.cards_remaining) > 8:
+            legalCards = util.get_legal_cards(self.cards, game_state.trick.suit_led)
+            winProbs = [getWinProb(game_state, self, card) for card in legalCards]
+        else:
+            values = minimax.minimax_predict(self, game_state)
+            legalCards = values.keys()
+            winProbs = values.values()
         maxProb = max(winProbs)
         partnerWinProb = getWinProb(game_state, self, game_state.trick.played.get(game_state.get_partner(self), None))
         if maxProb <= ATTEMPT_CUTOFF or partnerWinProb >= PARTNER_CUTOFF:
