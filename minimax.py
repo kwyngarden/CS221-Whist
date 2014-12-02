@@ -33,7 +33,7 @@ def minimax_values(player, game_state, players_hands):
             trick.play_card(players[turn], card)
             hands[players[turn].name].remove(card)
             plays.append(score + vopt(hands, trick, depth))
-            hands[players[turn].name].add(card)
+            hands[players[turn].name].append(card)
             trick.revert_play(players[turn], card)
         # finally we return the highest score
         if game_state.are_partners(player.name, players[turn].name): # max
@@ -48,7 +48,7 @@ def minimax_values(player, game_state, players_hands):
         trick.play_card(player, card)
         players_hands[player.name].remove(card)
         score = vopt(players_hands, trick, MINIMAX_DEPTH)
-        players_hands[player.name].add(card)
+        players_hands[player.name].append(card)
         trick.revert_play(player, card)
         choices[card] = score
 

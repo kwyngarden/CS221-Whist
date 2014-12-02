@@ -48,6 +48,7 @@ def getWinProb(game_state, currPlayer, card):
             unlikelyFactor = STRONG_UNLIKELY_FACTOR if card in game_state.unlikelies[antagonist] else 1
             beatProb = 1 - unlikelyFactor * (float(len(modifiedBeatCards)) / len(cardsUnknown))
             prob *= beatProb
+    return prob
 
 def getWeakestCard(game_state, legalCards):
     # suits = {}
