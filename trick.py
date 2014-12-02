@@ -1,4 +1,4 @@
-import util
+import util, copy
 
 class Trick:
     
@@ -7,13 +7,23 @@ class Trick:
         self.trump = trump
         self.suit_led = None
         self.left_to_play = set([player.name for player in players])
+        self.play_order = []
 
     def play_card(self, player, card):
         if not self.suit_led:
             self.suit_led = card.suit
         self.played[card] = player
         self.left_to_play.remove(player.name)
-        player.cards.remove(card)
+        self.play_order.append(player)
+
+    def revert_play(self, player, card):
+        assert (self.play_order)
+        last = self.play_order.pop()
+        assert (last == player)
+        if not self.play_order:
+            self.suit_led = None
+        del self.played[card]
+        self.left_to_play.add(player.name)
 
     def winning_card(self):
         return util.strongest_card([card for card in self.played], self.suit_led, self.trump)
