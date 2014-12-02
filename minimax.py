@@ -1,6 +1,6 @@
 from trick import Trick
 from generate_hands import HandGenerator
-import collections, random, util
+import random, util
 
 MINIMAX_DEPTH = 2
 
@@ -11,7 +11,7 @@ def minimax_values(player, game_state, players_hands):
         if depth == 0:
             return 0
         score = 0
-        turn = (players.index(trick.play_order[-1]) + 1) % whist.NUM_PLAYERS
+        turn = (players.index(trick.play_order[-1]) + 1) % len(players)
         # first we calculate the score if possible
         if not trick.left_to_play: # all players have played
             if game_state.are_partners(player.name, trick.winning_player().name):
@@ -24,12 +24,12 @@ def minimax_values(player, game_state, players_hands):
             trick = Trick(players, game_state.trump)
             depth = depth - 1
         # QUESTION: Does get_legal_cards also consider trump suite? How does human_player consider trump?
-        cards = util.get_legal_cards(hands[players[turn]].name, trick.suit_led)
+        cards = util.get_legal_cards(hands[players[turn].name], trick.suit_led)
         plays = []
         # next we attempt to play cards
         if not cards: # this branch cannot be satisified, prune it
             return 0
-        for card in cards[:]:
+        for card in set(cards):
             trick.play_card(players[turn], card)
             hands[players[turn].name].remove(card)
             plays.append(score + vopt(hands, trick, depth))
@@ -43,8 +43,8 @@ def minimax_values(player, game_state, players_hands):
     # make best play
     legal_cards = util.get_legal_cards(player.cards, game_state.trick.suit_led)
     trick = game_state.trick
-    choices = collections.Counter()
-    for card in legal_cards[:]:
+    choices = {}
+    for card in set(legal_cards):
         trick.play_card(player, card)
         players_hands[player.name].remove(card)
         score = vopt(players_hands, trick, MINIMAX_DEPTH)
@@ -54,14 +54,18 @@ def minimax_values(player, game_state, players_hands):
 
     return choices
 
-def minimax_values(player, game_state):
+def minimax_predict(player, game_state):
     gen = HandGenerator()
     all_hands = gen.generate_hands(game_state, player)
-    total = collections.Counter()
+    total = {}
+    legal_cards = util.get_legal_cards(player.cards, game_state.trick.suit_led)
     for hands in all_hands:
         hands[player] = player.cards
-        total += minimax_values(player, game_state, hands)
-    all_scores = sum(vals.values())
-    vals = {card: value * 1.0/all_scores for card, value in total.items()}
-    print "values: %s" % vals
-    return vals
+        cur_iter = minimax_values(player, game_state, hands)
+        total = {card: total.get(card, 0) + cur_iter[card] for card in legal_cards}
+    all_scores = sum(total.values())
+    if all_scores > 0:
+        total = {card: value * 1.0/all_scores for card, value in total.items()}
+    #print "cards: %s" % util.get_legal_cards(player.cards, game_state.trick.suit_led)
+    #print "values: %s" % total
+    return total

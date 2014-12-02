@@ -53,18 +53,18 @@ class HandGenerator:
 
         # Run backtracking search assigning cards (variables) to players (domain)
         self.start_time = time.time()
-        self.backtrack(cards, hand_assignments, player_possible_suits, player_num_cards, partial_assignment)
+        self.backtrack(cards, hand_assignments, players, player_possible_suits, player_num_cards, partial_assignment)
 
         return hand_assignments
 
-    def backtrack(self, cards, hand_assignments, player_possible_suits, player_num_cards, partial_assignment):
+    def backtrack(self, cards, hand_assignments, players, player_possible_suits, player_num_cards, partial_assignment):
         #print "Backtracking on %s, partial assignment %s" % (cards, partial_assignment)
         if not cards:
             hand_assignments.append(copy.deepcopy(partial_assignment))  
             return self.should_timeout() or len(hand_assignments) >= self.max_hands
         
         # Least constrained value: order players by number of cards left
-        ordered_players = sorted(player_num_cards, key=player_num_cards.get, reverse=True)
+        ordered_players = sorted(players, key=player_num_cards.get, reverse=True)
 
         card = cards[0]
         for player in ordered_players:
@@ -73,7 +73,7 @@ class HandGenerator:
                 # Make assignment and backtrack
                 partial_assignment[player].add(card)
                 player_num_cards[player] -= 1
-                should_stop = self.backtrack(cards[1:], hand_assignments, player_possible_suits, player_num_cards, partial_assignment)
+                should_stop = self.backtrack(cards[1:], hand_assignments, players, player_possible_suits, player_num_cards, partial_assignment)
 
                 # Undo assignment
                 partial_assignment[player].remove(card)
