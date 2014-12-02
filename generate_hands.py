@@ -5,13 +5,6 @@ import copy
 import random
 import time
 
-class Foo:
-    def __init__(self, suit, name):
-        self.suit = suit # TODO: remove this
-        self.name = name
-
-    def __str__(self):
-        return self.name
 
 class HandGenerator:
 
