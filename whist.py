@@ -7,6 +7,7 @@ from player import Player
 from baseline_player import BaselinePlayer
 from human_player import HumanPlayer
 from oracle_player import OraclePlayer
+from rules_player import RulesPlayer
 
 import random
 import util
@@ -119,7 +120,7 @@ def play_oracle_whist(num_iters=1000, silent=True):
             print 'The game is over! Final scores:'
             game_state.print_scores()
         
-        oracle_score = sum([game_state.scores[ally] for ally in allies])
+        oracle_score = sum([game_state.scores[oracle] for oracle in oracles])
         opp_score = sum([game_state.scores[opp] for opp in opponents])
         if oracle_score > opp_score:
             oracle_wins += 1
@@ -136,9 +137,9 @@ def get_oracle_players_and_partners(oracle_names, opponent_names):
     players = [
         # BaselinePlayer(opponent_names[0]),
         OraclePlayer(oracle_names[0]),
-        BaselinePlayer(opponent_names[1]),
+        RulesPlayer(opponent_names[1]),
         OraclePlayer(oracle_names[1]),
-        BaselinePlayer(opponent_names[0]),
+        RulesPlayer(opponent_names[0]),
     ]
     partners = {
         players[0].name: players[2].name,
@@ -196,4 +197,4 @@ def play_oracle_trick(game_state, first_to_play, silent=False):
 
 if __name__ == '__main__':
     play_whist()
-    # play_oracle_whist(silent=True, num_iters=10000)
+    # play_oracle_whist(silent=True, num_iters=1000)
