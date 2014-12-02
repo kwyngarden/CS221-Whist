@@ -5,7 +5,7 @@ ATTEMPT_CUTOFF = 0.45
 PARTNER_CUTOFF = 0.50
 CLOSE_ENOUGH_FACTOR = 0.03
 
-class RulesPlayer(Player):
+class OriginalRulesPlayer(Player):
     """Rule-Based computer player."""
     def choose_card(self, game_state):
         #print "RULE CARDS", [(c.rank, c.suit) for c in self.cards]
@@ -16,7 +16,6 @@ class RulesPlayer(Player):
         if maxProb <= ATTEMPT_CUTOFF or partnerWinProb >= PARTNER_CUTOFF:
             return getWeakestCard(game_state, legalCards)
         winners = [card for card in legalCards if maxProb - winProbs[legalCards.index(card)] <= CLOSE_ENOUGH_FACTOR]
-        #print "NUM WINNERS", len(winners)
         return min(winners)
 
 def getWinProb(game_state, currPlayer, card):
@@ -41,22 +40,4 @@ def getWinProb(game_state, currPlayer, card):
     return prob
 
 def getWeakestCard(game_state, legalCards):
-    suits = {}
-    for card in legalCards:
-        suitList = suits.get(card.suit, [])
-        suitList.append(card)
-        suits[card.suit] =  suitList
-    candidateSuit = None
-    candidateSuitFrac = 0.0
-    numTrumps = len(suits.get(game_state.trump, []))
-    if numTrumps > 0:
-        for suit in suits:
-            if suit != game_state.trick.trump and len(suits[suit]) == 1:
-                toDiscard = suits[suit][0]
-                remaining = set(game_state.cards_remaining)
-                remaining = remaining.difference(legalCards)
-                remaining = remaining.union(set([toDiscard]))
-                if util.strongest_card(remaining, game_state.trick.suit_led, game_state.trump) != toDiscard:
-                    #print "XXXXXXXXXXXXXXXXXXXXXXXXXXXHAPPENEDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                    return toDiscard
     return util.weakest_card(legalCards, game_state.trick.trump)

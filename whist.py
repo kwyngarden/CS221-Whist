@@ -8,6 +8,7 @@ from baseline_player import BaselinePlayer
 from human_player import HumanPlayer
 from oracle_player import OraclePlayer
 from rules_player import RulesPlayer
+from original_rules_player import OriginalRulesPlayer
 from minimax_player import MinimaxPlayer
 
 import random
@@ -143,9 +144,9 @@ def play_oracle_whist(num_iters=1000, silent=True):
 def get_oracle_players_and_partners(oracle_names, opponent_names):
     players = [
         # BaselinePlayer(opponent_names[0]),
-        OraclePlayer(oracle_names[0]),
+        OriginalRulesPlayer(oracle_names[0]),
         RulesPlayer(opponent_names[1]),
-        OraclePlayer(oracle_names[1]),
+        OriginalRulesPlayer(oracle_names[1]),
         RulesPlayer(opponent_names[0]),
     ]
     partners = {
@@ -204,5 +205,5 @@ def play_oracle_trick(game_state, first_to_play, silent=False):
 ###################### END ORACLE CODE ######################
 
 if __name__ == '__main__':
-    play_whist()
-    # play_oracle_whist(silent=True, num_iters=1000)
+    # play_whist()
+    play_oracle_whist(silent=True, num_iters=1000)

@@ -49,7 +49,7 @@ class HandGenerator:
         partial_assignment = {player: set() for player in players}
 
         # Most constrained variable: order cards by number of players who can have that suit
-        cards = self.order_cards_by_least_constrained(cards_remaining, players, player_possible_suits)
+        cards = self.order_cards_by_most_constrained(cards_remaining, players, player_possible_suits)
 
         # Run backtracking search assigning cards (variables) to players (domain)
         self.start_time = time.time()
@@ -87,7 +87,7 @@ class HandGenerator:
             return False
         return (time.time() - self.start_time) > self.timeout
 
-    def order_cards_by_least_constrained(self, cards, players, player_possible_suits):
+    def order_cards_by_most_constrained(self, cards, players, player_possible_suits):
         suit_counts = {suit: 0 for suit in suits}
         for player in players:
             for suit in suits:
@@ -98,8 +98,8 @@ class HandGenerator:
 if __name__ == "__main__":
     gen = HandGenerator()
     players = ['P1', 'P2', 'P3']
-    f = random.sample(Deck().cards, 24)
-    player_num_cards = {player: 8 for player in players}
+    f = random.sample(Deck().cards, 9)
+    player_num_cards = {player: 3 for player in players}
     player_possible_suits = {player: set(suits) for player in players}
     hand_assignments = gen._generate_hands(f, players, player_possible_suits, player_num_cards)
     print len(hand_assignments)
