@@ -6,13 +6,14 @@ ATTEMPT_CUTOFF = 0.45
 PARTNER_CUTOFF = 0.50
 CLOSE_ENOUGH_FACTOR = 0.03
 
-STRONG_UNLIKELY_FACTOR = 0.2
+STRONG_UNLIKELY_FACTOR = 0.05
+TRUMP_DANGER_FACTOR = 1
 
 class RulesPlayer(Player):
     """Rule-Based computer player."""
     def choose_card(self, game_state):
         #print "RULE CARDS", [(c.rank, c.suit) for c in self.cards]
-        if len(game_state.cards_remaining) > 8:
+        if True or len(game_state.cards_remaining) > 8:
             legalCards = util.get_legal_cards(self.cards, game_state.trick.suit_led)
             winProbs = [getWinProb(game_state, self, card) for card in legalCards]
         else:
@@ -40,33 +41,46 @@ def getWinProb(game_state, currPlayer, card):
     cardsUnknown = set(game_state.cards_remaining)
     cardsUnknown = cardsUnknown.difference(game_state.trick.played.keys())
     cardsUnknown = cardsUnknown.difference(currPlayer.cards)
-    beatCards = [c for c in cardsUnknown if c > card]
-    prob = 1.0
+    beatCards = [c for c in cardsUnknown if util.strongest_card([c, card], game_state.trick.suit_led, game_state.trump) == c]
+    mainProb = 1.0
+    numCards = len(currPlayer.cards)
     for antagonist in antagonistsLeft:
-        modifiedBeatCards = [c for c in beatCards if c.suit in game_state.player_possible_suits[antagonist]]
-        for card in modifiedBeatCards:
-            unlikelyFactor = STRONG_UNLIKELY_FACTOR if card in game_state.unlikelies[antagonist] else 1
-            beatProb = 1 - unlikelyFactor * (float(len(modifiedBeatCards)) / len(cardsUnknown))
-            prob *= beatProb
-    return prob
+        # prob1 = 1.0
+        # prob2 = 1.0
+        # sameSuits = [c for c in beatCards if c.suit == game_state.trick.suit_led]
+        # trumpers = [c for c in beatCards if c.suit == game_state.trick.trump]
+        # for i in range(0, numCards):
+        #     beatProb1 = 1 - float(len(sameSuits)) / (len(cardsUnknown) - i)
+        #     prob1 *= beatProb1
+        #     probBeatenInSuit = 1 - prob1
+        #     beatProb2 = 1 - float(len(trumpers)) / (len(cardsUnknown) - i)
+        #     probBeatenTrumpSuit = 1 - prob2
+        #     prob2 *= beatProb2
+        # probInSuit = probSuitExists(cardsUnknown, game_state.trick.suit_led, numCards)
+        # probInSuit = 0.0 if game_state.trick.suit_led not in game_state.player_possible_suits[antagonist] else probInSuit
+        # probTrump = probSuitExists(cardsUnknown, game_state.trick.trump, numCards)
+        # probInSuit = 0.0 if game_state.trick.trump not in game_state.player_possible_suits[antagonist] else probTrump
+        # probBeaten = probInSuit * probBeatenInSuit + (1 - probInSuit) * probTrump * probBeatenTrumpSuit
+        # mainProb *= 1 - probBeaten
+        if game_state.trick.suit_led in game_state.player_possible_suits[antagonist]:
+            trumpFactor = TRUMP_DANGER_FACTOR
+            sameSuits = [c for c in beatCards if c.suit == game_state.trick.suit_led]
+            for i in range(0, numCards):
+                beatProb = 1 - float(len(sameSuits)) / (len(cardsUnknown) - i)
+                mainProb *= beatProb
+        elif game_state.trick.suit_led != game_state.trick.trump:
+            trumpers = [c for c in beatCards if c.suit == game_state.trick.trump]
+            for i in range(0, numCards):
+                beatProb = 1 - float(len(trumpers)) / (len(cardsUnknown) - i)
+                mainProb *= beatProb
+    return mainProb
 
 def getWeakestCard(game_state, legalCards):
-    # suits = {}
-    # for card in legalCards:
-    #     suitList = suits.get(card.suit, [])
-    #     suitList.append(card)
-    #     suits[card.suit] =  suitList
-    # candidateSuit = None
-    # candidateSuitFrac = 0.0
-    # numTrumps = len(suits.get(game_state.trump, []))
-    # if numTrumps > 0:
-    #     for suit in suits:
-    #         if suit != game_state.trick.trump and len(suits[suit]) == 1:
-    #             toDiscard = suits[suit][0]
-    #             remaining = set(game_state.cards_remaining)
-    #             remaining = remaining.difference(legalCards)
-    #             remaining = remaining.union(set([toDiscard]))
-    #             if util.strongest_card(remaining, game_state.trick.suit_led, game_state.trump) != toDiscard:
-    #                 #print "XXXXXXXXXXXXXXXXXXXXXXXXXXXHAPPENEDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    #                 return toDiscard
     return util.weakest_card(legalCards, game_state.trick.trump)
+
+def probSuitExists(cardsOutstanding, suit, numCardsHand):
+    numLeft = len([c for c in cardsOutstanding if c.suit == suit])
+    probNone = 1.0
+    for i in range(0, numCardsHand):
+        probNone *= 1 - float(numLeft) / (len(cardsOutstanding) - i)
+    return 1 - probNone
