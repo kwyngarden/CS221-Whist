@@ -117,7 +117,7 @@ def play_whist():
 ####################### ORACLE CODE #######################
 
 def play_oracle_whist(num_iters=1000, silent=True):
-    random.seed(42)
+    # random.seed(42)
     oracles = ['Oracle1', 'Oracle2']
     opponents = ['Opponent1', 'Opponent2']
     players, partners, oracle_name = get_oracle_players_and_partners(oracles, opponents)
