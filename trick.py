@@ -16,6 +16,12 @@ class Trick:
         self.left_to_play.remove(player.name)
         self.play_order.append(player)
 
+    def card_of_player(self, player):
+        for card in self.played:
+            if self.played[card].name == player.name:
+                return card
+        return None
+
     def revert_play(self, player, card):
         assert (self.play_order)
         last = self.play_order.pop()

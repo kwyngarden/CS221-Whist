@@ -1,6 +1,9 @@
 from player import Player
 import util
 import minimax
+import monte_carlo
+
+DEBUG = False
 
 ATTEMPT_CUTOFF = 0.45
 PARTNER_CUTOFF = 0.50
@@ -9,8 +12,9 @@ CLOSE_ENOUGH_FACTOR = 0.03
 STRONG_UNLIKELY_FACTOR = 0.05
 TRUMP_DANGER_FACTOR = 1
 
+MINIMAX_CUTOFF = 2 * 4 # Number of cards below which to do minimax (#tricks x #players)
 
-class RulesPlayer(Player):
+class ComboPlayer(Player):
     """Rule-Based computer player."""
     
     def choose_card(self, game_state):
@@ -18,23 +22,43 @@ class RulesPlayer(Player):
         if (len(legalCards) == 1):
             # No point doing excessive processing if there's only one possible move
             return legalCards[0]
-        
+
         #print "RULE CARDS", [(c.rank, c.suit) for c in self.cards]
-        if True or len(game_state.cards_remaining) > 8:
-            winProbs = [getWinProb(game_state, self, card) for card in legalCards]
-        else:
+        
+        if len(game_state.cards_remaining) <= MINIMAX_CUTOFF:
+            if DEBUG: print '\t\t%s running minimax' % self.name
+            # 2 or fewer tricks remaining: can run full minimax on all possible hands
             values = minimax.minimax_predict(self, game_state)
-            legalCards = values.keys()
-            winProbs = values.values()
+            return max(legalCards, key=values.get)
+
+        # Otherwise, proceed via rule-based and Monte Carlo
+        winProbs = [getWinProb(game_state, self, card) for card in legalCards]
+        utilities = monte_carlo.monte_carlo_utilities(game_state, self)
         
         maxProb = max(winProbs)
         partnerWinProb = getWinProb(game_state, self, game_state.trick.card_of_player(game_state.get_partner(self)))
-        if maxProb <= ATTEMPT_CUTOFF or partnerWinProb >= PARTNER_CUTOFF:
-            return getWeakestCard(game_state, legalCards)
+        if DEBUG: print '\t\t%s found partner win probability: %s' % (self.name, partnerWinProb)
 
-        winners = [card for card in legalCards if maxProb - winProbs[legalCards.index(card)] <= CLOSE_ENOUGH_FACTOR]
-        #print "NUM WINNERS", len(winners)
-        return min(winners)
+        if maxProb <= ATTEMPT_CUTOFF or partnerWinProb >= PARTNER_CUTOFF:
+            # We decide to lay off; just take maximum utility from Monte Carlo
+            if DEBUG: print '\t\t%s is laying off' % self.name
+            return max(utilities.keys(), key=utilities.get)
+            # return getWeakestCard(game_state, legalCards) 
+
+        # Otherwise, combine win probability and Monte Carlo utility to choose card
+        winProbsMap = {legalCards[i]: winProbs[i] for i in xrange(len(legalCards))}
+        sorted_by_utility = sorted(utilities.keys(), key=utilities.get, reverse=True)
+        sorted_by_win_prob = sorted(winProbsMap.keys(), key=winProbsMap.get, reverse=True)
+        card_rank_sum = {card: (sorted_by_utility.index(card) + sorted_by_win_prob.index(card)) for card in legalCards}
+        best_card = min(card_rank_sum.keys(), key=card_rank_sum.get)
+        if DEBUG: print '\t\t%s is trying to win; playing %s, which is ranked %s in utility and %s in win probability' % (
+            self.name, best_card, sorted_by_utility.index(best_card), sorted_by_win_prob.index(best_card))
+        if DEBUG: print winProbsMap
+        return best_card
+
+        # winners = [card for card in legalCards if maxProb - winProbs[legalCards.index(card)] <= CLOSE_ENOUGH_FACTOR]
+        # print "NUM WINNERS", len(winners)
+        # return min(winners)
 
 def getWinProb(game_state, currPlayer, card):
     if card is None:

@@ -8,8 +8,8 @@ from baseline_player import BaselinePlayer
 from human_player import HumanPlayer
 from oracle_player import OraclePlayer
 from rules_player import RulesPlayer
-from original_rules_player import OriginalRulesPlayer
 from monte_carlo_player import MonteCarloPlayer
+from combo_player import ComboPlayer
 from minimax_player import MinimaxPlayer
 
 import random
@@ -117,7 +117,7 @@ def play_whist():
 ####################### ORACLE CODE #######################
 
 def play_oracle_whist(num_iters=1000, silent=True):
-    # random.seed(42)
+    random.seed(42)
     oracles = ['Oracle1', 'Oracle2']
     opponents = ['Opponent1', 'Opponent2']
     players, partners, oracle_name = get_oracle_players_and_partners(oracles, opponents)
@@ -157,10 +157,10 @@ def play_oracle_whist(num_iters=1000, silent=True):
 def get_oracle_players_and_partners(oracle_names, opponent_names):
     players = [
         # MonteCarloPlayer(opponent_names[0]),
-        BaselinePlayer(oracle_names[0]),
-        MonteCarloPlayer(opponent_names[1]),
-        BaselinePlayer(oracle_names[1]),
-        MonteCarloPlayer(opponent_names[0]),
+        OraclePlayer(oracle_names[0]),
+        ComboPlayer(opponent_names[1]),
+        OraclePlayer(oracle_names[1]),
+        ComboPlayer(opponent_names[0]),
     ]
     partners = {
         players[0].name: players[2].name,
@@ -218,7 +218,7 @@ def play_oracle_trick(game_state, first_to_play, silent=False):
     winning_player_name = game_state.trick.winning_player().name
     if not silent:
         print "\nTrick was won by %s with %s.\n" % (winning_player_name, game_state.trick.winning_card())
-        # raw_input()
+        raw_input('Press enter to proceed.\n')
     game_state.scores[winning_player_name] += 1
     return util.index_of_player_with_name(game_state, winning_player_name)
 
