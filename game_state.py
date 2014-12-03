@@ -26,7 +26,7 @@ class GameState:
 
     def get_opponents(self, player):
         opponents = []
-        for p in players:
+        for p in self.players:
             if self.are_opponents(p.name, player.name):
                 opponents.append(p)
         return opponents

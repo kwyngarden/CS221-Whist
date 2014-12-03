@@ -50,8 +50,19 @@ class OraclePlayer(Player):
 
     def dump_card(self, game_state):
         legal_cards = util.get_legal_cards(self.cards, game_state.trick.suit_led)
-        # Complicated logic...
-        return util.weakest_card(legal_cards, game_state.trump)
+        opponent_hands = [opp.cards for opp in game_state.get_opponents(self)]
+        card_num_possible_wins = {}
+        for card in legal_cards:
+            num_cards_worse = []
+            for opp_hand in opponent_hands:
+                num_worse = 0
+                for opp_card in opp_hand:
+                    if card.is_stronger_than(opp_card, card.suit, game_state.trump):
+                        num_worse += 1
+                num_cards_worse.append(num_worse)
+            card_num_possible_wins[card] = min(num_cards_worse)
+        return min(card_num_possible_wins.keys(), key=card_num_possible_wins.get)
+        # return util.weakest_card(legal_cards, game_state.trump)
 
     def partner_can_win_trick(self, game_state):
         partner = game_state.get_partner(self)
