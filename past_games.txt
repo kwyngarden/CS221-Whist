@@ -1,0 +1,4 @@
+	Human (15) and PartnerComboPlayer (17) have a total score of 32
+	OpponentCombo1 (17) and OpponentCombo2 (16) have a total score of 33
+
+

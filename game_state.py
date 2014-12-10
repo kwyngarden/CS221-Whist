@@ -51,6 +51,22 @@ class GameState:
                 return True
         return False
 
+    def get_team_scores_str(self):
+        return '%s\n%s\n\n\n' % (
+            self.get_team_score_str((self.players[0].name, self.partners[self.players[0].name])),
+            self.get_team_score_str((self.players[1].name, self.partners[self.players[1].name])),
+        )
+
+    def get_team_score_str(self, players):
+        player1, player2 = players
+        return '\t%s (%s) and %s (%s) have a total score of %s' % (
+            player1,
+            self.scores[player1],
+            player2,
+            self.scores[player2],
+            self.scores[player1] + self.scores[player2],
+        )
+
     def print_scores(self):
         self.print_team_score((self.players[0].name, self.partners[self.players[0].name]))
         self.print_team_score((self.players[1].name, self.partners[self.players[1].name]))

@@ -14,16 +14,19 @@ from minimax_player import MinimaxPlayer
 
 import random
 import util
+import optparse
 
 NUM_PLAYERS = 4
 NUM_TRICKS = Deck.NUM_CARDS / NUM_PLAYERS
+GAME_RECORD_FILE = 'past_games.txt'
+
 
 def get_players_and_partners():
     players = [
         HumanPlayer('Human'),
-        BaselinePlayer('OpponentBaseline1'),
-        OraclePlayer('OraclePlayer'),
-        BaselinePlayer('OpponentBaseline2'),
+        ComboPlayer('OpponentCombo1'),
+        ComboPlayer('PartnerComboPlayer'),
+        ComboPlayer('OpponentCombo2'),
     ]
     partners = {
         players[0].name: players[2].name,
@@ -101,7 +104,7 @@ def play_deal(game_state, dealer_index, using_oracle=False):
         # util.print_hands(game_state)
         first_to_play = play_trick(game_state, first_to_play)
 
-def play_whist():
+def play_whist(record_game):
     players, partners = get_players_and_partners()
     game_state = GameState(players, partners)
 
@@ -112,6 +115,10 @@ def play_whist():
 
     print 'The game is over! Final scores:'
     game_state.print_scores()
+    if record_game:
+        outfile = open(GAME_RECORD_FILE, 'a')
+        outfile.write(game_state.get_team_scores_str())
+        outfile.close()
 
 
 ####################### ORACLE CODE #######################
@@ -225,5 +232,9 @@ def play_oracle_trick(game_state, first_to_play, silent=False):
 ###################### END ORACLE CODE ######################
 
 if __name__ == '__main__':
-    # play_whist()
-    play_oracle_whist(silent=True, num_iters=10)
+    parser = optparse.OptionParser()
+    parser.add_option('-r', '--recordGame', action='store_true',
+        dest='record_game', default=False, help='Record the results of a human game')
+    options, args = parser.parse_args()
+    play_whist(options.record_game)
+    # play_oracle_whist(silent=True, num_iters=10)
