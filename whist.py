@@ -9,6 +9,7 @@ from human_player import HumanPlayer
 from oracle_player import OraclePlayer
 from rules_player import RulesPlayer
 from monte_carlo_player import MonteCarloPlayer
+from monte_carlo_oracle_player import MonteCarloOraclePlayer
 from combo_player import ComboPlayer
 from minimax_player import MinimaxPlayer
 
@@ -133,7 +134,7 @@ def play_oracle_whist(num_iters=1000, silent=True):
     points_for = 0
     points_against = 0
     
-    for _ in xrange(num_iters):
+    for i in xrange(num_iters):
         game_state = GameState(players, partners)
 
         dealer_index = 0
@@ -149,10 +150,10 @@ def play_oracle_whist(num_iters=1000, silent=True):
         oracle_score = sum([game_state.scores[oracle] for oracle in oracles])
         opp_score = sum([game_state.scores[opp] for opp in opponents])
         if oracle_score > opp_score:
-            print "Game %s: oracles win" % (_)
+            print "Game %s: oracles win" % (i+1)
             oracle_wins += 1
         else:
-            print "Game %s: opponents win" % (_)
+            print "Game %s: opponents win" % (i+1)
             opponent_wins += 1
         points_for += oracle_score
         points_against += opp_score
@@ -165,9 +166,9 @@ def get_oracle_players_and_partners(oracle_names, opponent_names):
     players = [
         # MonteCarloPlayer(opponent_names[0]),
         OraclePlayer(oracle_names[0]),
-        ComboPlayer(opponent_names[1]),
+        MonteCarloOraclePlayer(opponent_names[1]),
         OraclePlayer(oracle_names[1]),
-        ComboPlayer(opponent_names[0]),
+        MonteCarloOraclePlayer(opponent_names[0]),
     ]
     partners = {
         players[0].name: players[2].name,
@@ -236,5 +237,5 @@ if __name__ == '__main__':
     parser.add_option('-r', '--recordGame', action='store_true',
         dest='record_game', default=False, help='Record the results of a human game')
     options, args = parser.parse_args()
-    play_whist(options.record_game)
-    # play_oracle_whist(silent=True, num_iters=10)
+    # play_whist(options.record_game)
+    play_oracle_whist(silent=True, num_iters=10)

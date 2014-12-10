@@ -24,8 +24,6 @@ def monte_carlo_utilities(game_state, player, max_simulations=2000):
 def monte_carlo_simulate(game_state, player, chosen_card, hands):
     utility = 0
     player_names = [p.name for p in game_state.players]
-    # TODO: this is cheating
-    # hands = {player.name: list(player.cards) for player in game_state.players}
     
     played = dict({card: game_state.trick.played[card].name for card in game_state.trick.played})
     played[chosen_card] = player.name
@@ -47,7 +45,6 @@ def monte_carlo_simulate(game_state, player, chosen_card, hands):
         utility -= 1
     first_to_play = util.index_of_player_with_name(game_state, winning_player)
 
-    # TODO bugtest
     while hands[game_state.players[first_to_play].name]:
         first_player_name = game_state.players[first_to_play].name
         lead_card = random.choice(hands[first_player_name])
