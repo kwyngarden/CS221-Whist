@@ -1,4 +1,5 @@
-	Human (15) and PartnerComboPlayer (17) have a total score of 32
+	Keith (15) and PartnerComboPlayer (17) have a total score of 32
 	OpponentCombo1 (17) and OpponentCombo2 (16) have a total score of 33
 
-
+    Keith (22) and PartnerComboPlayer (13) have a total score of 35
+    OpponentCombo1 (18) and OpponentCombo2 (12) have a total score of 30
