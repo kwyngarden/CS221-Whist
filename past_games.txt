@@ -3,3 +3,10 @@
 
     Keith (22) and PartnerComboPlayer (13) have a total score of 35
     OpponentCombo1 (18) and OpponentCombo2 (12) have a total score of 30
+	
+    Keith (6) and PartnerComboPlayer (14) have a total score of 20
+	OpponentCombo1 (15) and OpponentCombo2 (17) have a total score of 32
+
+	Keith (23) and PartnerComboPlayer (13) have a total score of 36
+	OpponentCombo1 (15) and OpponentCombo2 (14) have a total score of 29
+

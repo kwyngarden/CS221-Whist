@@ -52,7 +52,7 @@ class GameState:
         return False
 
     def get_team_scores_str(self):
-        return '%s\n%s\n\n\n' % (
+        return '%s\n%s\n\n' % (
             self.get_team_score_str((self.players[0].name, self.partners[self.players[0].name])),
             self.get_team_score_str((self.players[1].name, self.partners[self.players[1].name])),
         )
