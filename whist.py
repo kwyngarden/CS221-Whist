@@ -49,12 +49,12 @@ def start_new_deal(game_state, dealer_index):
     deck = Deck()
     game_state.cards_remaining = set(deck.cards)
     hands = deck.deal()
+    game_state.trump = hands[dealer_index][-1].suit
     for i in xrange(NUM_PLAYERS):
         game_state.players[i].cards = hands[i]
         game_state.players[i].round_start(game_state)
     reset_player_possible_suits(game_state)
     reset_unlikelies(game_state)
-    game_state.trump = game_state.players[dealer_index].cards[-1].suit
 
 def play_trick(game_state, first_to_play):
     game_state.trick = Trick(game_state.players, game_state.trump)

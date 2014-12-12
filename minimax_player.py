@@ -20,9 +20,12 @@ class MinimaxPlayer(Player):
         self.predictor.refresh(game_state, self)
         players = self.predictor.players
         turn_index = players.index(self)
+        def utility(pred, trick):
+            return 0
+
         def vopt(pred, trick, depth):
             if depth == 0:
-                return 0
+                return utility(pred, trick)
             score = 0
             turn = (players.index(trick.play_order[-1]) + 1) % whist.NUM_PLAYERS
             # first we calculate the score if possible
@@ -36,7 +39,6 @@ class MinimaxPlayer(Player):
                     return score
                 trick = Trick(players, game_state.trump)
                 depth = depth - 1
-            # QUESTION: Does get_legal_cards also consider trump suite? How does human_player consider trump?
             cards = util.get_legal_cards(pred.predict(players[turn]), trick.suit_led)
             cards = cards if len(cards) < self.breadth else random.sample(cards, self.breadth)
             plays = []
