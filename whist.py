@@ -165,10 +165,10 @@ def play_oracle_whist(num_iters=1000, silent=True):
 def get_oracle_players_and_partners(oracle_names, opponent_names):
     players = [
         # MonteCarloPlayer(opponent_names[0]),
-        OraclePlayer(oracle_names[0]),
-        MonteCarloOraclePlayer(opponent_names[1]),
-        OraclePlayer(oracle_names[1]),
-        MonteCarloOraclePlayer(opponent_names[0]),
+        MonteCarloOraclePlayer(oracle_names[0]),
+        MonteCarloPlayer(opponent_names[1]),
+        MonteCarloOraclePlayer(oracle_names[1]),
+        MonteCarloPlayer(opponent_names[0]),
     ]
     partners = {
         players[0].name: players[2].name,
