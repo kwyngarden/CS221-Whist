@@ -1,6 +1,9 @@
-from monte_carlo import monte_carlo_utilities
 from player import Player
+from generate_hands import HandGenerator
+from monte_carlo import monte_carlo_utilities
+
 import util
+import random
 
 
 class MonteCarloPlayer(Player):

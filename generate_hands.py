@@ -9,7 +9,7 @@ import time
 class HandGenerator:
 
     # Constructor
-    def __init__(self, timeout=10, max_hands=5000000):
+    def __init__(self, timeout=10, max_hands=4000):
         self.timeout = timeout
         self.max_hands = max_hands
 
@@ -99,10 +99,10 @@ class HandGenerator:
         return sorted(cards, key=lambda card: suit_counts[card.suit])
 
 if __name__ == "__main__":
-    gen = HandGenerator()
+    gen = HandGenerator(max_hands=300000)
     players = ['P1', 'P2', 'P3']
-    f = random.sample(Deck().cards, 39)
-    player_num_cards = {player: 13 for player in players}
+    f = random.sample(Deck().cards, 15)
+    player_num_cards = {player: 5 for player in players}
     player_possible_suits = {player: set(suits) for player in players}
     hand_assignments = gen._generate_hands(f, players, player_possible_suits, player_num_cards)
     print len(hand_assignments)

@@ -166,9 +166,9 @@ def get_oracle_players_and_partners(oracle_names, opponent_names):
     players = [
         # MonteCarloPlayer(opponent_names[0]),
         MonteCarloOraclePlayer(oracle_names[0]),
-        MonteCarloPlayer(opponent_names[1]),
+        ComboPlayer(opponent_names[1]),
         MonteCarloOraclePlayer(oracle_names[1]),
-        MonteCarloPlayer(opponent_names[0]),
+        ComboPlayer(opponent_names[0]),
     ]
     partners = {
         players[0].name: players[2].name,
@@ -237,5 +237,5 @@ if __name__ == '__main__':
     parser.add_option('-r', '--recordGame', action='store_true',
         dest='record_game', default=False, help='Record the results of a human game')
     options, args = parser.parse_args()
-    play_whist(options.record_game)
-    # play_oracle_whist(silent=True, num_iters=10)
+    # play_whist(options.record_game)
+    play_oracle_whist(silent=True, num_iters=100)

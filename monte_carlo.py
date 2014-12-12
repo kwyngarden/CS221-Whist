@@ -4,17 +4,19 @@ import util
 import random
 
 
-def monte_carlo_utilities(game_state, player, max_simulations=2000):
+def monte_carlo_utilities(game_state, player, max_simulations=2000, simulations_per_hand=1):
     legal_cards = util.get_legal_cards(player.cards, game_state.trick.suit_led)
     utilities = {card: 0.0 for card in legal_cards}
     simulations_per_card = max_simulations / len(legal_cards)
-    hand_generator = HandGenerator(max_hands=simulations_per_card)
+    hands_needed = simulations_per_card / simulations_per_hand
+    hand_generator = HandGenerator(max_hands=hands_needed)
     hand_assignments = hand_generator.generate_hands(game_state, player)
 
     for card in legal_cards:
         for i in xrange(len(hand_assignments)):
-            hands = {player_name : list(hand_assignments[i][player_name]) for player_name in hand_assignments[i]}
-            utilities[card] += monte_carlo_simulate(game_state, player, card, hands)
+            for _ in xrange(simulations_per_hand):
+                hands = {player_name : list(hand_assignments[i][player_name]) for player_name in hand_assignments[i]}
+                utilities[card] += monte_carlo_simulate(game_state, player, card, hands)
 
     # Normalize to probabilities and return
     for card in legal_cards:
@@ -34,7 +36,8 @@ def monte_carlo_simulate(game_state, player, chosen_card, hands):
     suit_led = game_state.trick.suit_led or chosen_card.suit
     for player_name in game_state.trick.left_to_play:
         if player_name != player.name:
-            card_to_play = random.choice(util.get_legal_cards(hands[player_name], suit_led))
+            # card_to_play = random.choice(util.get_legal_cards(hands[player_name], suit_led))
+            card_to_play = util.strongest_legal_play(util.get_legal_cards(hands[player_name], suit_led), suit_led, game_state.trump)
             played[card_to_play] = player_name
             hands[player_name].remove(card_to_play)
     winning_card = util.strongest_card([card for card in played], suit_led, game_state.trump)
@@ -47,14 +50,16 @@ def monte_carlo_simulate(game_state, player, chosen_card, hands):
 
     while hands[game_state.players[first_to_play].name]:
         first_player_name = game_state.players[first_to_play].name
-        lead_card = random.choice(hands[first_player_name])
+        # lead_card = random.choice(hands[first_player_name])
+        lead_card = util.strongest_legal_play(util.get_legal_cards(hands[first_player_name], None), None, game_state.trump)
         played = {lead_card: first_player_name}
         hands[first_player_name].remove(lead_card)
         suit_led = lead_card.suit
 
         for player_name in player_names:
             if player_name != first_player_name:
-                card_to_play = random.choice(util.get_legal_cards(hands[player_name], suit_led))
+                # card_to_play = random.choice(util.get_legal_cards(hands[player_name], suit_led))
+                card_to_play = util.strongest_legal_play(util.get_legal_cards(hands[player_name], suit_led), suit_led, game_state.trump)
                 played[card_to_play] = player_name
                 hands[player_name].remove(card_to_play)
         
