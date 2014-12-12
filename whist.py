@@ -24,10 +24,10 @@ GAME_RECORD_FILE = 'past_games.txt'
 
 def get_players_and_partners():
     players = [
-        HumanPlayer('Human'),
-        ComboPlayer('OpponentCombo1'),
-        ComboPlayer('PartnerComboPlayer'),
-        ComboPlayer('OpponentCombo2'),
+        MinimaxPlayer('MinimaxPlayer'),
+        BaselinePlayer('BaselinePlayer1'),
+        BaselinePlayer('BaselinePlayer2'),
+        OraclePlayer('OraclePlayer'),
     ]
     partners = {
         players[0].name: players[2].name,
@@ -237,5 +237,5 @@ if __name__ == '__main__':
     parser.add_option('-r', '--recordGame', action='store_true',
         dest='record_game', default=False, help='Record the results of a human game')
     options, args = parser.parse_args()
-    # play_whist(options.record_game)
-    play_oracle_whist(silent=True, num_iters=100)
+    play_whist(options.record_game)
+    #play_oracle_whist(silent=True, num_iters=100)
