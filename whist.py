@@ -24,10 +24,10 @@ GAME_RECORD_FILE = 'past_games.txt'
 
 def get_players_and_partners():
     players = [
-        HumanPlayer('Yifan'),
-        ComboPlayer('ComboPlayer1'),
+        HumanPlayer('Human'),
+        ComboPlayer('ComboOpponent1'),
         ComboPlayer('ComboPartner'),
-        ComboPlayer('ComboPlayer2'),
+        ComboPlayer('ComboOpponent2'),
     ]
     partners = {
         players[0].name: players[2].name,
