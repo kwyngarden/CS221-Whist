@@ -1,6 +1,7 @@
 from player import Player
 from predictor import Predictor
 from trick import Trick
+from card import ranks
 import random, util, copy
 
 class MinimaxPlayer(Player):
@@ -20,8 +21,20 @@ class MinimaxPlayer(Player):
         self.predictor.refresh(game_state, self)
         players = self.predictor.players
         turn_index = players.index(self)
+
         def utility(pred, trick):
-            return 0
+            total_tricks = len(pred.deck.cards) / whist.NUM_PLAYERS
+            played = [card for card, player in pred.plays.items() if player == self]
+            tricks_remaining = total_tricks - len(played)
+            not_played = [card for card in self.cards if card not in played]
+            win_thresh = (tricks_remaining * len(ranks)) / total_tricks
+            score = 0
+            for card in not_played:
+                if ranks.index(card.rank) >= win_thresh:
+                    score += 1
+                else:
+                    score -= 1
+            return score
 
         def vopt(pred, trick, depth):
             if depth == 0:
@@ -47,9 +60,9 @@ class MinimaxPlayer(Player):
                 return 0
             for card in cards:
                 trick.play_card(players[turn], card)
-                pred.try_play(card)
+                pred.try_play(players[turn], card)
                 plays.append(score + vopt(pred, trick, depth))
-                pred.revert_play(card)
+                pred.revert_play(players[turn], card)
                 trick.revert_play(players[turn], card)
             # finally we return the highest score
             if game_state.are_partners(self.name, players[turn].name): # max
@@ -59,14 +72,14 @@ class MinimaxPlayer(Player):
         # make best play
         legal_cards = util.get_legal_cards(self.cards, game_state.trick.suit_led)
         trick = game_state.trick
-        pred = self.predictor
         choices = []
         max_score = float("-inf")
+        pred = self.predictor
         for card in legal_cards:
             trick.play_card(self, card)
-            pred.try_play(card)
+            pred.try_play(self, card)
             score = vopt(pred, trick, self.depth)
-            pred.revert_play(card)
+            pred.revert_play(self, card)
             trick.revert_play(self, card)
             print "Predict %s: %d" % (card, score)
             choices.append((score, card))

@@ -8,7 +8,7 @@ class Predictor:
         self.players = []
         self.card_prob = []
         self.threshold = threshold
-        self.plays = set()
+        self.plays = {}
         self.trump = None
         self.suit_led = None
 
@@ -23,7 +23,7 @@ class Predictor:
     def reset(self, game_state):
         self.players = game_state.players
         self.card_prob = [{card: 1.0 for card in self.deck.cards} for _ in xrange(len(self.players))]
-        self.plays = set()
+        self.plays = {}
         self.trump = game_state.trump
 
     """Update model with information from game_state"""
@@ -33,6 +33,7 @@ class Predictor:
         self.suit_led = game_state.trick.suit_led
         # we know the player's hand
         self.card_prob[index] = {card: 1.0 if card in current_player.cards else 0.0 for card in self.deck.cards}
+        # TODO: reweight hands based on others' hands
 
     """Update model once we observe a player making a play"""
     def learn(self, player, card):
@@ -60,10 +61,10 @@ class Predictor:
     """Returns a list of cards that we are fairly sure the player has"""
     def predict(self, player):
         index = self.players.index(player)
-        return [card for card, prob in self.card_prob[index].items() if prob >= self.threshold and card not in self.plays]
+        return [card for card, prob in self.card_prob[index].items() if prob >= self.threshold and card not in self.plays.keys()]
 
-    def try_play(self, card):
-        self.plays.add(card)
+    def try_play(self, player, card):
+        self.plays[card] = player
 
-    def revert_play(self, card):
-        self.plays.remove(card)
+    def revert_play(self, player, card):
+        del self.plays[card]
