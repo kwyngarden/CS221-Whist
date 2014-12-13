@@ -24,10 +24,10 @@ GAME_RECORD_FILE = 'past_games.txt'
 
 def get_players_and_partners():
     players = [
-        MinimaxPlayer('ComboPlayer'),
-        BaselinePlayer('BaselinePlayer1'),
-        BaselinePlayer('BaselinePlayer2'),
-        OraclePlayer('OraclePlayer'),
+        HumanPlayer('Mary'),
+        ComboPlayer('ComboPlayer1'),
+        ComboPlayer('PartnerComboPlayer'),
+        ComboPlayer('ComboPlayer3'),
     ]
     partners = {
         players[0].name: players[2].name,
