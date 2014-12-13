@@ -7,7 +7,6 @@ PARTNER_CUTOFF = 0.50
 CLOSE_ENOUGH_FACTOR = 0.03
 
 STRONG_UNLIKELY_FACTOR = 0.05
-TRUMP_DANGER_FACTOR = 1
 
 
 class RulesPlayer(Player):
@@ -52,36 +51,56 @@ def getWinProb(game_state, currPlayer, card):
     beatCards = [c for c in cardsUnknown if util.strongest_card([c, card], game_state.trick.suit_led, game_state.trump) == c]
     mainProb = 1.0
     numCards = len(currPlayer.cards)
+    numSlotsLed = getNumSlots(game_state, currPlayer, game_state.trick.suit_led, len(cardsUnknown))
+    numSlotsTrump = getNumSlots(game_state, currPlayer, game_state.trick.trump, len(cardsUnknown))
     for antagonist in antagonistsLeft:
-        # prob1 = 1.0
-        # prob2 = 1.0
-        # sameSuits = [c for c in beatCards if c.suit == game_state.trick.suit_led]
-        # trumpers = [c for c in beatCards if c.suit == game_state.trick.trump]
-        # for i in range(0, numCards):
-        #     beatProb1 = 1 - float(len(sameSuits)) / (len(cardsUnknown) - i)
-        #     prob1 *= beatProb1
-        #     probBeatenInSuit = 1 - prob1
-        #     beatProb2 = 1 - float(len(trumpers)) / (len(cardsUnknown) - i)
-        #     probBeatenTrumpSuit = 1 - prob2
-        #     prob2 *= beatProb2
-        # probInSuit = probSuitExists(cardsUnknown, game_state.trick.suit_led, numCards)
-        # probInSuit = 0.0 if game_state.trick.suit_led not in game_state.player_possible_suits[antagonist] else probInSuit
-        # probTrump = probSuitExists(cardsUnknown, game_state.trick.trump, numCards)
-        # probInSuit = 0.0 if game_state.trick.trump not in game_state.player_possible_suits[antagonist] else probTrump
-        # probBeaten = probInSuit * probBeatenInSuit + (1 - probInSuit) * probTrump * probBeatenTrumpSuit
-        # mainProb *= 1 - probBeaten
-        if game_state.trick.suit_led in game_state.player_possible_suits[antagonist]:
-            trumpFactor = TRUMP_DANGER_FACTOR
-            sameSuits = [c for c in beatCards if c.suit == game_state.trick.suit_led]
+        if game_state.trick.suit_led not in game_state.player_possible_suits[antagonist]:
+            probCanTrump = 1
+        else: 
+            numInSuit = len([c for c in cardsUnknown if c.suit == game_state.trick.suit_led])
+            probCanTrump = 1
             for i in range(0, numCards):
-                beatProb = 1 - float(len(sameSuits)) / (len(cardsUnknown) - i)
-                mainProb *= beatProb
-        elif game_state.trick.suit_led != game_state.trick.trump:
-            trumpers = [c for c in beatCards if c.suit == game_state.trick.trump]
+                probCanTrump *= 1 - float(numInSuit) / (numSlotsLed - i)
+                if probCanTrump == 0:
+                    break
+        #print probCanTrump
+        sameSuits = [c for c in beatCards if c.suit == game_state.trick.suit_led]
+        if game_state.trick.suit_led not in game_state.player_possible_suits[antagonist] or len(sameSuits) == 0:
+            sameProb = 0
+        else:
+            sameProb = 1
             for i in range(0, numCards):
-                beatProb = 1 - float(len(trumpers)) / (len(cardsUnknown) - i)
-                mainProb *= beatProb
+                beatProb = 1 - float(len(sameSuits)) / (numSlotsLed - i)
+                sameProb *= beatProb
+                if sameProb == 0:
+                    break
+            sameProb = 1 - sameProb
+        trumpers = [c for c in beatCards if c.suit == game_state.trick.trump]
+        if game_state.trick.trump != game_state.trick.suit_led and game_state.trick.trump not in game_state.player_possible_suits[antagonist]:
+            trumpProb = 0
+        elif len(trumpers) == 0:
+            trumpProb = 0
+        else:
+            trumpProb = 1
+            for i in range(0, numCards):
+                beatProb = 1 - float(len(trumpers)) / (numSlotsTrump - i)
+                trumpProb *= beatProb
+                if trumpProb == 0:
+                    break
+            trumpProb = 1 - trumpProb
+        mainProb *= 1 - sameProb - probCanTrump * trumpProb
+
     return mainProb
+
+def getNumSlots(game_state, currPlayer, suit, numCardsOutstanding):
+    numSlots = numCardsOutstanding
+    thirdParties = list(game_state.get_opponents(currPlayer))
+    thirdParties.append(game_state.get_partner(currPlayer))
+    for party in thirdParties:
+        if suit not in game_state.player_possible_suits[party.name]:
+            numSlots -= len(party.cards)
+    return numSlots
+
 
 def getWeakestCard(game_state, legalCards):
     return util.weakest_card(legalCards, game_state.trick.trump)
