@@ -1,0 +1,15 @@
+Our project is implemented in Python. To play a game of Whist against (and partnered with) our final AI agent, simply type:
+
+python whist.py
+
+To run automated games between various agents, switch the comment symbol between the final two lines of whist.py (uncomment play_oracle_whist and comment play_whist). You can choose which agents are playing by editing the players list in get_oracle_players_and_partners in whist.py (partners and opponents are alternating). Then simply run python whist.py again.
+
+The game logic is contained in whist.py, with supporting structures in game_state.py and trick.py, plus card.py, deck.py, and util.py. Each different agent must follow the interface specified in the Player class (player.py), and all agents include _player in the filename. There are a few remaining files:
+
+generate_hands.py: CSP-solving hand generator
+
+monte_carlo.py: high-level interface for running Monte Carlo simulations on the rest of a deal
+
+minimax.py: runs minimax search
+
+predictor.py: picks cards for branching in minimax search
