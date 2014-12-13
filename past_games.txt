@@ -16,3 +16,9 @@
 	Keith (16) and PartnerComboPlayer (13) have a total score of 29
 	OpponentCombo1 (20) and OpponentCombo2 (16) have a total score of 36
 
+	Mary (13) and ComboPlayer2 (20) have a total score of 33
+	ComboPlayer1 (16) and ComboPlayer3 (16) have a total score of 32
+
+	Mary (16) and PartnerComboPlayer (19) have a total score of 35
+	ComboPlayer1 (13) and ComboPlayer3 (17) have a total score of 30
+
