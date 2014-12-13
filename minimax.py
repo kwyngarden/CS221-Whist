@@ -1,5 +1,7 @@
 from trick import Trick
+from deck import Deck
 from generate_hands import HandGenerator
+from card import ranks
 import random, util
 
 MINIMAX_DEPTH = 2
@@ -7,9 +9,21 @@ MINIMAX_DEPTH = 2
 def minimax_values(player, game_state, players_hands):
     players = game_state.players
     turn_index = players.index(player)
+    def utility(hands, trick):
+        total_tricks = Deck.NUM_CARDS / len(players)
+        not_played = hands[self.name]
+        tricks_remaining = len(not_played)
+        win_thresh = (tricks_remaining * len(ranks)) / total_tricks
+        score = 0
+        for card in not_played:
+            if ranks.index(card.rank) >= win_thresh:
+                score += 1
+            else:
+                score -= 1
+        return score
     def vopt(hands, trick, depth):
         if depth == 0:
-            return 0
+            return utility(hands, trick)
         score = 0
         turn = (players.index(trick.play_order[-1]) + 1) % len(players)
         # first we calculate the score if possible

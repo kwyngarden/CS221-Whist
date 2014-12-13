@@ -24,7 +24,7 @@ GAME_RECORD_FILE = 'past_games.txt'
 
 def get_players_and_partners():
     players = [
-        MinimaxPlayer('MinimaxPlayer'),
+        MinimaxPlayer('ComboPlayer'),
         BaselinePlayer('BaselinePlayer1'),
         BaselinePlayer('BaselinePlayer2'),
         OraclePlayer('OraclePlayer'),
